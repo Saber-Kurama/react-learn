@@ -13,6 +13,18 @@ function Saber() {
     </div>
   )
 }
+function FragmentComponent() {
+  return (
+    <>
+    <div>
+      saber1231
+    </div>
+    <div>
+      saber12312
+    </div>
+    </>
+  )
+}
 class TodoApp extends Component {
   render() {
     return (
@@ -28,6 +40,7 @@ const jsx = (
     <a href="https://www.kaikeba.com/">kkb</a>
     <Saber />
     <TodoApp name="类组件"/>
+    <FragmentComponent />
     {/* <FunctionComponent name="函数组件" />
     <ClassComponent name="类组件" />
     <FragmentComponent /> */}

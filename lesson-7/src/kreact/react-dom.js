@@ -2,7 +2,6 @@ function render(vnode, container) {
   console.log("vnode", vnode); //sy-log
   // vnode - > node
   const node = createNode(vnode);
-
   // // node更新到container中
   container.appendChild(node);
 }
@@ -27,8 +26,11 @@ function createNode(vnode) {
   } else if (isNumberOrString(vnode)) {
     node = updateTextComponent(vnode);
   } else if (typeof type === 'function') {
-    console.log('type.isReactComponent', type.prototype.isReactComponent)
     node = type.prototype.isReactComponent ? updateClassComponent(vnode) : updateFunctionComponent(vnode)
+  }else if(typeof type === 'symbol'){
+    if(Symbol.keyFor(type) === 'react.fragment'){
+      node = updateFragmentComponent(vnode)
+    }
   }
   return node;
 }
@@ -43,7 +45,6 @@ function reconcileChildren(parentNode, children) {
 function updateHostComponent(vnode) {
   const { type } = vnode;
   const node = document.createElement(type);
-  console.log("vnodevnode", vnode);
   updateNode(node, vnode.props);
   reconcileChildren(node, vnode?.props?.children || []);
   return node;
@@ -61,6 +62,12 @@ function updateFunctionComponent(vnode) {
 function updateClassComponent(vnode) {
   const {type, props} = vnode;
   return createNode(new type(props).render());
+}
+function updateFragmentComponent(vnode) {
+  const node = document.createDocumentFragment();
+  const childrens = vnode.props?.children || []
+  reconcileChildren(node, childrens)
+  return node
 }
 
 export default {
