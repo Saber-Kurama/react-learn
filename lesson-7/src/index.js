@@ -1,13 +1,33 @@
 // import React from 'react';
-import ReactDOM from 'react-dom';
+// import ReactDOM from 'react-dom';
 import './index.css';
 // import App from './App';
 // import reportWebVitals from './reportWebVitals';
+import ReactDOM from './kreact/react-dom';
+import Component from './kreact/Component';
 
+function Saber() {
+  return (
+    <div>
+      saber
+    </div>
+  )
+}
+class TodoApp extends Component {
+  render() {
+    return (
+      <div >
+        TodoApp{this.props.name}
+      </div>
+    )
+  }
+}
 const jsx = (
   <div className="border">
     <h1>全栈123</h1>
     <a href="https://www.kaikeba.com/">kkb</a>
+    <Saber />
+    <TodoApp name="类组件"/>
     {/* <FunctionComponent name="函数组件" />
     <ClassComponent name="类组件" />
     <FragmentComponent /> */}
