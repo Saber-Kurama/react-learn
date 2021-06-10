@@ -39,8 +39,8 @@ const jsx = (
     <h1>全栈123</h1>
     <a href="https://www.kaikeba.com/">kkb</a>
     <Saber />
-    <TodoApp name="类组件"/>
-    <FragmentComponent />
+    {/* <TodoApp name="类组件"/>
+    <FragmentComponent /> */}
     {/* <FunctionComponent name="函数组件" />
     <ClassComponent name="类组件" />
     <FragmentComponent /> */}
