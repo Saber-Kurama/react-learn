@@ -1,6 +1,19 @@
 // 下一个要执行的任务
 let nextUnitOfWork = null; // fiber
 let wipRoot = null; //work in progress root: fiber
+let currentRoot = null;
+let wipFiber = null;
+
+/*
+fiber 节点的数据结构 
+fiberProps {
+  child: ; // 第一个子节点
+  sibling: ; // 下一个兄弟节点
+  return: ; // 父节点
+  stateNode: ; // 在原生标签里，指的就是dom节点
+  alternate: ; // 上一个老的fiber节点
+}
+*/
 
 function isStringOrNumber(sth) {
   return typeof sth === "string" || typeof sth === "number";
@@ -92,6 +105,9 @@ function updateHostComponent(workInProgress) {
 // }
 
 function updateFunctionComponent(workInProgress) {
+  wipFiber = workInProgress;
+  wipFiber.hooks = [];
+  wipFiber.hookIndex = 0;
   const {type, props} = workInProgress;
   const child = type(props);
   reconcileChildren(workInProgress, child) 
@@ -136,7 +152,9 @@ function performUnitOfWork(workInProgress) {
 // 提交 添加到 dom上
 function commitRoot() {
   commitWorker(wipRoot.child);
+  currentRoot = wipRoot;
   wipRoot = null;
+
 }
 
 function commitWorker(workInProgress) {
@@ -171,13 +189,37 @@ function workLoop(IdleDeadline) {
   if (!nextUnitOfWork && wipRoot) {
     commitRoot();
   }
+  window.requestIdleCallback(workLoop);
 }
 // var handle =
 window.requestIdleCallback(workLoop);
 
 export function useState(init) {
-  const setState = (action) => {
+  // 区分初次渲染还是 更新
+  const oldHook = wipFiber.alternate && wipFiber.alternate.hooks[wipFiber.hookIndex]
+  if(oldHook){
 
+  }
+  const hooks = oldHook ? 
+  {
+    state: oldHook.state,
+    queue: oldHook.queue
+  }
+  :
+  {
+    state: init,
+    queue: [],
+  }
+
+  const setState = (action) => {
+    hooks.queue.push(action);
+    // 假的 
+    wipRoot = {
+      stateNode: currentRoot.stateNode,
+      props: currentRoot.props,
+      alternate: currentRoot
+    }
+    nextUnitOfWork = wipFiber
   }
   return [init, setState]
 }
