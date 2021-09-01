@@ -1,3 +1,7 @@
+import {
+  createContainer,
+} from '../react-reconciler/src/ReactFiberReconciler';
+// 创建 渲染子树到容器
 function legacyRenderSubtreeIntoContainer(
   parentComponent,
   children,
@@ -19,7 +23,10 @@ function legacyRenderSubtreeIntoContainer(
   }
   console.log('root', root)
 }
-
+// 创建根的节点从DOM容器
+function legacyCreateRootFromDOMContainer(){
+  const root = createContainer()
+}
 export function render(element, container, callback) {
   return legacyRenderSubtreeIntoContainer(
     null,

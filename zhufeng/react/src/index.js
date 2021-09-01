@@ -5,7 +5,7 @@ import "./index.css";
 // import reportWebVitals from './reportWebVitals';
 import ReactDOM from "./zfreact/react-dom";
 // import Component from './kreact/Component';
-
+// 基本的原生组件
 const jsx = (
   <div className="border" style={{color: "blue"}}>saber</div>
 )

@@ -1,3 +1,5 @@
+import { REACT_TEXT } from "./constants";
+
 function render(vnode, container) {
   // 1. 虚拟dom 转换成 真实 dom
   const dom = createDOM(vnode, container);
@@ -13,8 +15,12 @@ function createDOM(vnode, container) {
   console.log("vnode", vnode);
   const { type, props } = vnode;
   let dom;
-  // 原生组件
-  dom = document.createElement(type);
+  if (type === REACT_TEXT) {
+    dom = document.createTextNode(props.content);
+  } else {
+    // 原生组件
+    dom = document.createElement(type);
+  }
   if (props) {
     // 使用虚拟DOM的属性更新刚创建出来的真实DOM的属性
     updateProps(dom, {}, props);
