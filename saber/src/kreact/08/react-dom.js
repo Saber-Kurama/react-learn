@@ -105,6 +105,8 @@ let wipRoot = null; //work in progress root: fiber
   _debugHookTypes?: Array<HookType> | null,
   }
  */
+const symbolFor = Symbol.for;
+const REACT_FRAGMENT_TYPE = symbolFor("react.fragment");
 
 function render(vnode, container) {
   console.log("vnode", vnode);
@@ -116,19 +118,14 @@ function render(vnode, container) {
     props: { children: { ...vnode } },
     stateNode: container,
   };
-  console.log("wipRoot", wipRoot);
   nextUnitOfWork = wipRoot;
 }
-const symbolFor = Symbol.for;
-const REACT_FRAGMENT_TYPE = symbolFor("react.fragment");
 
 function isNumberOrString(str) {
   return typeof str === "number" || typeof str === "string";
 }
 function createNode(workInprogress) {
   const { type, props } = workInprogress;
-  console.log("type", type);
-  console.log("vnode", workInprogress);
   let node = document.createElement(type);
   updateNode(node, props);
   return node;
@@ -169,7 +166,6 @@ function updateNode(node, nextVal) {
 
 // 原生节点
 function updateHostComponent(workInprogress) {
-  console.log('updateHostComponent', workInprogress)
   if (!workInprogress.stateNode) {
     // 生成 dom 的节点
     workInprogress.stateNode = createNode(workInprogress);
@@ -177,38 +173,29 @@ function updateHostComponent(workInprogress) {
   reconcileChildren(workInprogress, workInprogress.props.children);
 }
 
-// 文本节点
-function updateTextComponent(vnode) {
-  const node = document.createTextNode(vnode + "");
-  return node;
-}
-
 // fragment
-function updateFragmentComponent(vnode) {
-  const { type, props } = vnode;
-  const node = document.createDocumentFragment();
-  reconcileChildren(node, props.children);
-  return node;
+function updateFragmentComponent(workIngress) {
+  const { type, props } = workIngress;
+  console.log('workIngress', workIngress)
+  // const node = document.createDocumentFragment();
+  // 需要创建 Fragment吗
+  reconcileChildren(workIngress, props.children);
+  // return node;
 }
 
 // 函数组件
-function updateFunctionComponent(vnode) {
-  const { type, props } = vnode;
+function updateFunctionComponent(workInprogress) {
+  const { type, props } = workInprogress;
   const child = type(props); // 执行函数 返回vnode
-  // vnode->node
-  const node = createNode(child);
-  return node;
+  reconcileChildren(workInprogress, child);
 }
 
 // 类组件
-function updateClassComponent(vnode) {
-  const { type, props } = vnode;
+function updateClassComponent(workInprogress) {
+  const { type, props } = workInprogress;
   const instance = new type(props); // new 出类的实例
   const child = instance.render(); // 执行类实例的render方法
-
-  // vnode->node
-  const node = createNode(child);
-  return node;
+  reconcileChildren(workInprogress, child);
 }
 
 // 递归调用 fiber 的 链表数据结构
@@ -243,16 +230,23 @@ function reconcileChildren(workInProgress, children) {
 const performUnitOfWork = (workInProgress) => {
   // 1. 执行当前的 工作单元
   const { type } = workInProgress;
-  console.log('performUnitOfWork', type)
   if (typeof type === "string") {
     // 原生组件
     updateHostComponent(workInProgress);
+  } else if (typeof type === "function") {
+    // // 如果是函数组件
+    // updateFunctionComponent(workInProgress)
+    // 再判断是函数组件还是类组件
+    type.prototype.isReactComponent
+      ? updateClassComponent(workInProgress)
+      : updateFunctionComponent(workInProgress);
+  } else if (type === REACT_FRAGMENT_TYPE) {
+    updateFragmentComponent(workInProgress);
   }
-  console.log("workInProgress======", workInProgress );
+  console.log("workInProgress======", workInProgress);
   // 2. 返回下一个工作单元
   // 举例 王朝故事
   if (workInProgress.child) {
-    console.log('???>>>')
     return workInProgress.child;
   }
   let nextFiber = workInProgress;
@@ -275,7 +269,7 @@ function commitWorker(workInProgress) {
   }
   // 问题是怎么查找父节点
   let parentNodeFiber = workInProgress.return;
-  // 为什么循环
+  // 函数组件 和 类组件 没有 stateNode
   while (!parentNodeFiber.stateNode) {
     parentNodeFiber = parentNodeFiber.return;
   }
@@ -284,18 +278,17 @@ function commitWorker(workInProgress) {
   if (workInProgress.stateNode) {
     parentNode.appendChild(workInProgress.stateNode);
   }
-  commitWorker(workInProgress.child)
-  commitWorker(workInProgress.sibling)
+  commitWorker(workInProgress.child);
+  commitWorker(workInProgress.sibling);
 }
 
 const workLopp = (IdleDaadline) => {
-  console.log("workLopp----");
   // timeRemaining
   while (nextUnitOfWork && IdleDaadline.timeRemaining() > 1) {
     // 执行下一个工作单元
     nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
   }
-  console.log('wipRoot', wipRoot)
+  console.log("wipRoot", wipRoot);
   // commit
   if (!nextUnitOfWork && wipRoot) {
     commitRoot();

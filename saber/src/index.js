@@ -41,9 +41,10 @@ const jsx = (
   <div className="border">
     <h1>阅读源码</h1>
     <a href="https://www.kaikeba.com/">kkb</a>
-    {/* <FunctionComponent name="函数组件" />
+    <FunctionComponent name="函数组件" />
     <ClassComponent name="类组件" />
-    <FragmentComponent /> */}
+    <FragmentComponent />
+    <ClassComponent name="类组件" /> 
   </div>
 );
 
