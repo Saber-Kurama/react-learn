@@ -3,15 +3,26 @@
 import './index.css';
 // import App from './App';
 // import reportWebVitals from './reportWebVitals';
-import ReactDOM from './kreact/08/react-dom';
-import Component from './kreact/08/Component';
+import ReactDOM, { useState } from './kreact/09/react-dom';
+import Component from './kreact/09/Component';
 // import ReactDOM from './miniReact/react-dom/ReactDom'
 
 
 function FunctionComponent(props) {
+  const [count, setCount] = useState(0);
   return (
     <div className="border">
       <p>{props.name}</p>
+      <div>
+      <button
+          onClick={() => {
+            console.log('action')
+            setCount(count + 1);
+          }}
+        >
+          {count}
+        </button>
+      </div>
     </div>
   );
 }
@@ -42,9 +53,9 @@ const jsx = (
     <h1>阅读源码</h1>
     <a href="https://www.kaikeba.com/">kkb</a>
     <FunctionComponent name="函数组件" />
-    <ClassComponent name="类组件" />
+    {/* <ClassComponent name="类组件" />
     <FragmentComponent />
-    <ClassComponent name="类组件" /> 
+    <ClassComponent name="类组件" />  */}
   </div>
 );
 
